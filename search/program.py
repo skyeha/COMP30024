@@ -28,12 +28,15 @@ def search(
     # The render_board() function is handy for debugging. It will print out a
     # board state in a human-readable format. If your terminal supports ANSI
     # codes, set the `ansi` flag to True to print a colour-coded version!
-    print(render_board(board, target, ansi=False))
+    print(render_board(board, target, ansi=True))
+    # print(board)
 
-    # Do some impressive AI stuff here to find the solution...
-    # ...
-    # ... (your solution goes here!)
-    # ...
+    # Need to get the coordinates of the starting red point
+
+    starting_points = [(coord,color) for coord,color in board.items() if color.value == 0]
+    print(starting_points)
+
+    print(board[target])
 
     # Here we're returning "hardcoded" actions as an example of the expected
     # output format. Of course, you should instead return the result of your
@@ -44,3 +47,10 @@ def search(
         PlaceAction(Coord(1, 8), Coord(2, 8), Coord(3, 8), Coord(4, 8)),
         PlaceAction(Coord(5, 8), Coord(6, 8), Coord(7, 8), Coord(8, 8)),
     ]
+
+
+
+def heuristic(start: Coord, node: Coord, target:Coord):
+    g = abs(start.r - node.r) + abs(start.c - node.c)
+    h = abs(node.r - target.r) + abs(node.c - target.c)
+    return g + h

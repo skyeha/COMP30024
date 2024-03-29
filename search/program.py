@@ -39,22 +39,29 @@ def search(
     
 
     initial_state = current_state(board)
-
-
+    
     
 
     # path search
     # path = aStar(starting_points[0], target, initial_state)
     # path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
 
-    # for key in path.keys():
-    #     if key == target:
-    #         break
-    #     grid[key] = PlayerColor.RED
+    initial_state[Coord((7 + 0) % BOARD_N , (9+1) % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(7 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(7 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(7 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
 
-    # print(render_board(grid, target, ansi = True))
+    initial_state[Coord(8 % BOARD_N, 9 % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(8 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(8 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
+    initial_state[Coord(8 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
+
+    print(render_board(initial_state, target, ansi = True))
 
     return None
+
+
+# Need an algorithm that checks for fully occupied column/row
 
 
 # compute heuristic for A* search using manhattan distance

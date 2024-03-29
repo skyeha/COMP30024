@@ -31,20 +31,29 @@ def search(
     # codes, set the `ansi` flag to True to print a colour-coded version!
     print(render_board(board, target, ansi=True))
 
-    # Need to modify board to know which path is movable 
+    actions = {}
+
 
     # Need to get the coordinates of the starting red point
-    # starting_points = [(coord,color) for coord,color in board.items() if color.value == 0]
-   
-    grid = create_grid(board)
-   
+    starting_points = [coord for coord,color in board.items() if color.value == 0]
+    
+
+    initial_state = current_state(board)
 
 
-    # return [
-    #     PlaceAction(Coord(2, 5), Coord(2, 6), Coord(3, 6), Coord(3, 7)),
-    #     PlaceAction(Coord(1, 8), Coord(2, 8), Coord(3, 8), Coord(4, 8)),
-    #     PlaceAction(Coord(5, 8), Coord(6, 8), Coord(7, 8), Coord(8, 8)),
-    # ]
+    
+
+    # path search
+    # path = aStar(starting_points[0], target, initial_state)
+    # path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
+
+    # for key in path.keys():
+    #     if key == target:
+    #         break
+    #     grid[key] = PlayerColor.RED
+
+    # print(render_board(grid, target, ansi = True))
+
     return None
 
 
@@ -52,14 +61,24 @@ def search(
 def heuristic(node: Coord, target: Coord)-> int:
     return abs(node.r - target.r) + abs(node.c - target.c)
 
+def deadlock_check (start: Coord, target: Coord, board: dict[Coord,PlayerColor]) -> bool:
+    return True if aStar(start, target, board) == None else aStar(start, target, board)
+
+
+# A* search implementation (can be used for checking deadlocks)
 def aStar(start: Coord, target: Coord, board: dict[Coord, PlayerColor]):
+    # store g-score of each node (i.,e mahattan distance between start and n)
     g_score = { node : float('inf') for node , _ in board.items()}
     g_score[start] = 0
+
+    # store f-score of each node -> sum of g_score + heuristic
     f_score = { node : float('inf') for node , _ in board.items()}
     f_score[start] = heuristic(start, target) 
 
     open = PriorityQueue()
     open.put((f_score[start], heuristic(start, target), start))
+    
+    path = {} 
 
     while not open.empty():
         current_node = open.get()[2]
@@ -67,14 +86,32 @@ def aStar(start: Coord, target: Coord, board: dict[Coord, PlayerColor]):
         if current_node == target:
             break
 
-        while child_node == None:
-            if is_empty(curent_node)
-            
-def is_empty(board: dict[Coord, PlayerColor], node: Coord) -> bool:
-    return True if board.get(Coord) == None else False      
+        for dir in Direction:
+            if board.get(current_node.__add__(dir.value)) == None or current_node.__add__(dir.value) == target:
+                child_node = current_node.__add__(dir.value) 
 
+                temp_g_score = g_score[current_node] + 1
+                temp_f_score = temp_g_score + heuristic(child_node, target)
 
-def create_grid(board: dict[Coord,PlayerColor]) -> dict[Coord, PlayerColor]:
+                if temp_f_score < f_score[child_node]:
+                    g_score[child_node] = temp_g_score
+                    f_score[child_node] = temp_f_score
+                    open.put((temp_f_score, heuristic(child_node, target), child_node))
+                    path[child_node] = current_node
+
+    # check for cases of deadlock
+    if target not in path:
+        return None
+    
+    final_path = {}     
+    tracker = target
+    while tracker != start:
+        final_path[path[tracker]] = tracker
+        tracker = path[tracker]
+
+    return final_path
+
+def current_state(board: dict[Coord,PlayerColor]) -> dict[Coord, PlayerColor]:
     grid = {}
     for r in range(BOARD_N):
         for c in range(BOARD_N):

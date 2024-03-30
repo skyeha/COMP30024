@@ -1,62 +1,55 @@
 from .core import *
 
-class I_shape:
-
-    def __init__(self):
-        self.shapes = {
-            0 : [Coord(0,0), Coord (0,1), Coord(0,2) , Coord(0,3)],
-            1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(3,0)]
-        }
-
-class O_shape:
-
-    def __init__(self):
-        self.shapes = {
-            0 : [Coord(0,0), Coord (0,1), Coord(1,0) , Coord(1,1)],
-        }
-
-class T_shape:
-
-    def __init__(self):
-        self.shapes = {
-            0 : [Coord(0, 1), Coord (1, 1), Coord(1,2) , Coord(1,0)],
-            1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)],
-            2 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,1)],
-            3 : [Coord(0,1), Coord(0,1), Coord(1,1), Coord(2,1)]
-        }
-
-class J_shape:
-
-    def __init__(self):
-        self.shapes = {
-            0 : [Coord(0,1), Coord (1, 1), Coord(2,1) , Coord(2,0)],
-            1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)],
-            2 : [Coord(0,0), Coord(1,0), Coord(1,1), Coord(1,2)],
-            3 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,2)]
-        }
-
-class L_shape:
-
-    def __init__(self):
-        self.shapes = {
-            0 : [Coord(0,0), Coord (1, 0), Coord(2,0) , Coord(2,1)],
-            1 : [Coord(0,0), Coord(0,1) , Coord(0,2), Coord (1,0)],
-            2 : [Coord(0,0), Coord(0,1), Coord(1,1), Coord(2,1)],
-            3 : [Coord(0,2), Coord(1,0), Coord(1,1), Coord(1,2)]
-        }
-
-class Z_shape:
+class Block:
     
     def __init__(self):
         self.shape = {
-            0 : [Coord(0,0), Coord(0,1), Coord(1,1), Coord(1,2)],
-            1 : [Coord(0,1), Coord(1,1), Coord(1,0), Coord(2,0)]
+            "I" : {
+                0 : [Coord(0,0), Coord (0,1), Coord(0,2) , Coord(0,3)],
+                1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(3,0)]
+            },
+            "O" : {
+                0 : [Coord(0,0), Coord (0,1), Coord(1,0) , Coord(1,1)],
+            },
+            "T" : {
+                0 : [Coord(0, 1), Coord (1, 1), Coord(1,2) , Coord(1,0)],
+                1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)],
+                2 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,1)],
+                3 : [Coord(0,1), Coord(0,1), Coord(1,1), Coord(2,1)]
+            },
+            "J" : {
+                0 : [Coord(0,1), Coord (1, 1), Coord(2,1) , Coord(2,0)],
+                1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)],
+                2 : [Coord(0,0), Coord(1,0), Coord(1,1), Coord(1,2)],
+                3 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,2)]
+            },
+            "L" : {
+                0 : [Coord(0,0), Coord (1, 0), Coord(2,0) , Coord(2,1)],
+                1 : [Coord(0,0), Coord(0,1) , Coord(0,2), Coord (1,0)],
+                2 : [Coord(0,0), Coord(0,1), Coord(1,1), Coord(2,1)],
+                3 : [Coord(0,2), Coord(1,0), Coord(1,1), Coord(1,2)]
+            },
+            "S" : {
+                0 : [Coord(0,0), Coord(0,1), Coord(1,1), Coord(1,2)],
+                1 : [Coord(0,1), Coord(1,1), Coord(1,0), Coord(2,0)],
+                2 : [Coord(0,1), Coord(0,2), Coord(1,0), Coord(1,1)],
+                3 : [Coord(0,0), Coord(1,0), Coord(1,1), Coord(2,1)]
+            }
+
         }
 
-class S_shape:
-    
-    def __init__(self):
-        self.shape = {
-            0 : [Coord(0,1), Coord(0,2), Coord(1,0), Coord(1,1)],
-            1 : [Coord(0,0), Coord(1,0), Coord(1,1), Coord(2,1)]
+        self.num_rotations = {
+            "I" : 2,
+            "O" : 1,
+            "T" : 4,
+            "J" : 4,
+            "L" : 4,
+            "S" : 4
+
         }
+    
+    def get_shape(self, name):
+        return self.shape.get(name)
+    
+    def get_num_rotation(self, name):
+        return self.num_rotations.get(name)

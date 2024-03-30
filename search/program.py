@@ -3,6 +3,7 @@
 
 from .core import PlayerColor, Coord, PlaceAction, BOARD_N, Direction
 from .utils import render_board
+from .shape import *
 from queue import PriorityQueue 
 
 
@@ -62,6 +63,11 @@ def search(
 
 
 # Need an algorithm that checks for fully occupied column/row
+
+
+
+# Function for placing the block
+def place_block(start, shape: ) 
 
 
 # compute heuristic for A* search using manhattan distance

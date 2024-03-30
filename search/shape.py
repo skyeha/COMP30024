@@ -1,9 +1,9 @@
-from .core import *
+from .core import Coord
 
 class Block:
     
     def __init__(self):
-        self.shape = {
+        self.shapes = {
             "I" : {
                 0 : [Coord(0,0), Coord (0,1), Coord(0,2) , Coord(0,3)],
                 1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(3,0)]
@@ -12,10 +12,10 @@ class Block:
                 0 : [Coord(0,0), Coord (0,1), Coord(1,0) , Coord(1,1)],
             },
             "T" : {
-                0 : [Coord(0, 1), Coord (1, 1), Coord(1,2) , Coord(1,0)],
-                1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)],
-                2 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,1)],
-                3 : [Coord(0,1), Coord(0,1), Coord(1,1), Coord(2,1)]
+                0 : [Coord(0, 1), Coord (1, 1), Coord(1,2) , Coord(1,0)], # upside down T
+                1 : [Coord(0,0), Coord (1,0), Coord(2,0) , Coord(1,1)], # anti-clockwise 90 T
+                2 : [Coord(0,0), Coord(0,1), Coord(0,2), Coord(1,1)], #
+                3 : [Coord(0,1), Coord(1,0), Coord(1,1), Coord(2,1)]
             },
             "J" : {
                 0 : [Coord(0,1), Coord (1, 1), Coord(2,1) , Coord(2,0)],
@@ -48,8 +48,8 @@ class Block:
 
         }
     
-    def get_shape(self, name):
-        return self.shape.get(name)
+    def get_shape(self,name):
+        return self.shapes.get(name)
     
     def get_num_rotation(self, name):
         return self.num_rotations.get(name)

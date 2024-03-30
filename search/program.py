@@ -41,34 +41,77 @@ def search(
 
     initial_state = current_state(board)
     
+    valid_dir = direction_check(starting_points[0], initial_state)
+    print(valid_dir)
     
+    test = place_block(valid_dir[0], "S", 2, initial_state)
 
     # path search
     # path = aStar(starting_points[0], target, initial_state)
     # path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
 
-    initial_state[Coord((7 + 0) % BOARD_N , (9+1) % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(7 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(7 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(7 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord((7 + 0) % BOARD_N , (9+1) % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(7 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(7 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(7 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
 
-    initial_state[Coord(8 % BOARD_N, 9 % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(8 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(8 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
-    initial_state[Coord(8 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(8 % BOARD_N, 9 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(8 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(8 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
+    # initial_state[Coord(8 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
 
-    print(render_board(initial_state, target, ansi = True))
+    print(render_board(test, target, ansi = True))
 
     return None
 
 
 # Need an algorithm that checks for fully occupied column/row
+def direction_check(coord: Coord, board: dict[Coord, PlayerColor]) -> list:
+    valid_dir = []
 
+    for dir in Direction:
+        next_node = coord + dir.value
+        if board.get(next_node) == None:
+            valid_dir.append(next_node)
+    return valid_dir
 
 
 # Function for placing the block
-def place_block(start, shape: ) 
+def place_block(coord: Coord, shape: str, rotation : int, board : dict[Coord,PlayerColor]):
+    block = Block().get_shape(shape)
+    block = block.get(rotation)
 
+    # Check for the need of adjustment the block due to offset
+    if Coord(0,0) in block:
+        offset = 0
+    elif Coord(1,0) in block:
+        offset = 1
+    elif Coord(2,0) in block:
+        offset = 2
+
+    if placement_check(coord, board, block):
+        for i in range(len(block)):
+            place = Coord((coord.r + block[i].r - offset) % BOARD_N , (coord.c + block[i].c) % BOARD_N)
+            board[place] = PlayerColor.RED
+    #         return True
+    # return False
+    return board
+   
+    
+
+def placement_check(coord: Coord, board : dict[Coord,PlayerColor], block : list):
+    if Coord(0,0) in block:
+        offset = 0
+    elif Coord(1,0) in block:
+        offset = 1
+    elif Coord(2,0) in block:
+        offset = 2
+
+    for i in range(len(block)):
+        new_coord = Coord((coord.r + block[i].r - offset) % BOARD_N,(coord.c + block[i].c) % BOARD_N )
+        if board.get(new_coord) != None:
+            return False # overlaps with an occupied cell
+    return True
 
 # compute heuristic for A* search using manhattan distance
 def heuristic(node: Coord, target: Coord)-> int:

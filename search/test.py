@@ -1,4 +1,4 @@
-from itertools import product
+a = {1 : 1, 2:2, 3:3}
 
-for r,c in product(range(11), repeat = 2):
-    print(r,c)
+b = list(a.items())
+print(b)

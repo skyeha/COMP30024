@@ -40,18 +40,17 @@ def search(
     initial_state = current_state(board)
     
     # Get the path that we should place the tetromino block along 
-    path = aStar(starting_points[0], target, initial_state)
+    path = aStar(starting_points[1], target, initial_state)
 
     
     
     # valid_dir = direction_check(starting_points[0], initial_state)
     path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
-    print(path)
     
-    for _, valid_node in path.items():
-        for shape in "IOTJLS":
-            next_state = place_block(valid_node, )
-    # test = place_block(valid_dir[0], "S", 0, initial_state)
+    asd = path_breakdown(path)
+    print(asd)
+    
+    
 
     # path search
     # path = aStar(starting_points[0], target, initial_state)
@@ -63,14 +62,28 @@ def search(
 
     return None
 
-# Check for possible shape that can be place along the path
-def possible_shape(path: dict[Coord, Coord]):
-    path_length = len(path)
+# Breaking the path down to segments of 4 cells
+def path_breakdown(main_path: dict[Coord, Coord]):
+    path_length = len(main_path)
+    
 
-    shape = []
+    path_pieces = []
     while path_length != 0:
-        if path_length - 4 > 0:
+        path = []
+        path_items = list(main_path.items())
+        if (path_length) - 4 > 0:
             for i in range(4):
+                path.append(path_items[i][1])
+                main_path.pop(path_items[i][0])
+            path_pieces.append(path)
+            path_length = path_length - 4
+        else:
+            for i in range(path_length):
+                path.append(path_items[i][1])
+                main_path.pop(path_items[i][0])
+            path_pieces.append(path)
+            path_length = 0
+    return path_pieces
                 
 
 # Need an algorithm that checks for fully occupied column/row
@@ -109,7 +122,7 @@ def place_block(coord: Coord, shape: str, rotation : int, curr_state : dict[Coor
             return None # can't place the block
         next_state[new_coord] = PlayerColor.RED
     
-    return next_state
+    return next_state , new_coord
    
     
 

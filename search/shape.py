@@ -1,6 +1,6 @@
 from .core import Coord
 
-class Block:
+class Tetromino:
     
     def __init__(self):
         self.shapes = {

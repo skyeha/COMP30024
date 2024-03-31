@@ -34,36 +34,44 @@ def search(
 
     actions = {}
 
-
+    
     # Need to get the coordinates of the starting red point
     starting_points = [coord for coord,color in board.items() if color.value == 0]
-    
-
     initial_state = current_state(board)
     
-    valid_dir = direction_check(starting_points[0], initial_state)
-    print(valid_dir)
+    # Get the path that we should place the tetromino block along 
+    path = aStar(starting_points[0], target, initial_state)
+
     
-    test = place_block(valid_dir[0], "S", 2, initial_state)
+    
+    # valid_dir = direction_check(starting_points[0], initial_state)
+    path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
+    print(path)
+    
+    for _, valid_node in path.items():
+        for shape in "IOTJLS":
+            next_state = place_block(valid_node, )
+    # test = place_block(valid_dir[0], "S", 0, initial_state)
 
     # path search
     # path = aStar(starting_points[0], target, initial_state)
     # path = {k: path[k] for k in sorted(path, key=lambda x: list(path.keys()).index(x), reverse=True)}
 
-    # initial_state[Coord((7 + 0) % BOARD_N , (9+1) % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(7 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(7 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(7 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
+    
 
-    # initial_state[Coord(8 % BOARD_N, 9 % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(8 % BOARD_N, 10 % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(8 % BOARD_N, 11 % BOARD_N)] = PlayerColor.RED
-    # initial_state[Coord(8 % BOARD_N, 12 % BOARD_N)] = PlayerColor.RED
-
-    print(render_board(test, target, ansi = True))
+    # print(render_board(test, target, ansi = True))
 
     return None
 
+# Check for possible shape that can be place along the path
+def possible_shape(path: dict[Coord, Coord]):
+    path_length = len(path)
+
+    shape = []
+    while path_length != 0:
+        if path_length - 4 > 0:
+            for i in range(4):
+                
 
 # Need an algorithm that checks for fully occupied column/row
 def direction_check(coord: Coord, board: dict[Coord, PlayerColor]) -> list:
@@ -77,11 +85,14 @@ def direction_check(coord: Coord, board: dict[Coord, PlayerColor]) -> list:
 
 
 # Function for placing the block
-def place_block(coord: Coord, shape: str, rotation : int, board : dict[Coord,PlayerColor]):
-    block = Block().get_shape(shape)
+def place_block(coord: Coord, shape: str, rotation : int, curr_state : dict[Coord,PlayerColor]):
+    """
+        Place a tetromino piece and check if that placement is valid
+    """
+    block = Tetromino().get_shape(shape)
     block = block.get(rotation)
 
-    # Check for the need of adjustment the block due to offset
+    # Check for the need of adjustmenting block due to offset
     if Coord(0,0) in block:
         offset = 0
     elif Coord(1,0) in block:
@@ -89,29 +100,18 @@ def place_block(coord: Coord, shape: str, rotation : int, board : dict[Coord,Pla
     elif Coord(2,0) in block:
         offset = 2
 
-    if placement_check(coord, board, block):
-        for i in range(len(block)):
-            place = Coord((coord.r + block[i].r - offset) % BOARD_N , (coord.c + block[i].c) % BOARD_N)
-            board[place] = PlayerColor.RED
-    #         return True
-    # return False
-    return board
-   
-    
-
-def placement_check(coord: Coord, board : dict[Coord,PlayerColor], block : list):
-    if Coord(0,0) in block:
-        offset = 0
-    elif Coord(1,0) in block:
-        offset = 1
-    elif Coord(2,0) in block:
-        offset = 2
+    block_coord = []
+    next_state = curr_state
 
     for i in range(len(block)):
         new_coord = Coord((coord.r + block[i].r - offset) % BOARD_N,(coord.c + block[i].c) % BOARD_N )
-        if board.get(new_coord) != None:
-            return False # overlaps with an occupied cell
-    return True
+        if curr_state.get(new_coord) != None: # check for overlap
+            return None # can't place the block
+        next_state[new_coord] = PlayerColor.RED
+    
+    return next_state
+   
+    
 
 # compute heuristic for A* search using manhattan distance
 def heuristic(node: Coord, target: Coord)-> int:
@@ -123,12 +123,12 @@ def deadlock_check (start: Coord, target: Coord, board: dict[Coord,PlayerColor])
 
 # A* search implementation (can be used for checking deadlocks)
 def aStar(start: Coord, target: Coord, board: dict[Coord, PlayerColor]):
-    # store g-score of each node (i.,e mahattan distance between start and n)
-    g_score = { node : float('inf') for node , _ in board.items()}
+    # store g-score of each cell (i.,e mahattan distance between start and n)
+    g_score = { cell : float('inf') for cell , _ in board.items()}
     g_score[start] = 0
 
-    # store f-score of each node -> sum of g_score + heuristic
-    f_score = { node : float('inf') for node , _ in board.items()}
+    # store f-score of each cell -> sum of g_score + heuristic
+    f_score = { cell : float('inf') for cell , _ in board.items()}
     f_score[start] = heuristic(start, target) 
 
     open = PriorityQueue()

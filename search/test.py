@@ -1,4 +1,6 @@
-a = {1 : 1, 2:2, 3:3}
+def empty():
+    l = []
+    return l
 
-b = list(a.items())
-print(b)
+a = empty()
+print(bool(not a))

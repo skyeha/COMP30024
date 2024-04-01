@@ -87,16 +87,41 @@ def path_breakdown(main_path: dict[Coord, Coord]):
                 
 
 # Need an algorithm that checks for fully occupied column/row
-def direction_check(coord: Coord, board: dict[Coord, PlayerColor]) -> list:
-    valid_dir = []
+def generate_possible_tetromino(shape: str, base_coord: Coord, board: dict[Coord, PlayerColor]):
+    """
+        Generate possible rotation of the specified Tetromino shape that can be placed
+    """
+    for rotation in Tetromino().get_shape(shape):
+        offset = get_offset(rotation)
+        action_coord = []
+        for tetro_coord in rotation:
+            new_coord = Coord((base_coord.r + tetro_coord.r - offset) % BOARD_N, (base_coord.c + tetro_coord.c) % BOARD_N)
+            if board.get(new_coord) != None:
+                continue
+            action_coord.append(new_coord)
+        yield rotation, action_coord
 
-    for dir in Direction:
-        next_node = coord + dir.value
-        if board.get(next_node) == None:
-            valid_dir.append(next_node)
-    return valid_dir
+def successor(base_coord: Coord, board: dict[Coord, PlayerColor]):
+    """
+        Generate all possible state that we can get from the 19 pieces of tetrominoes
+    """
+    for shape in Tetromino().shapes.keys():
+        for rotation , action_coord in generate_possible_tetromino(shape, base_coord, board):
+            if not action_coord:
+                continue
+            successor_state = board
+            for coord in action_coord:
+                successor_state[coord] = PlayerColor.RED
+            yield (action_coord, successor_state)
 
-
+            
+def get_offset(shape: list):
+    if Coord(0,0) in shape:
+        return 0
+    elif Coord(1,0) in shape:
+        return 1
+    elif Coord(2,0) in shape:
+        return 2
 # Function for placing the block
 def place_block(coord: Coord, shape: str, rotation : int, curr_state : dict[Coord,PlayerColor]):
     """
@@ -130,9 +155,6 @@ def place_block(coord: Coord, shape: str, rotation : int, curr_state : dict[Coor
 def heuristic(node: Coord, target: Coord)-> int:
     return abs(node.r - target.r) + abs(node.c - target.c)
 
-def deadlock_check (start: Coord, target: Coord, board: dict[Coord,PlayerColor]) -> bool:
-    return True if aStar(start, target, board) == None else aStar(start, target, board)
-
 
 # A* search implementation (can be used for checking deadlocks)
 def aStar(start: Coord, target: Coord, board: dict[Coord, PlayerColor]):
@@ -157,10 +179,15 @@ def aStar(start: Coord, target: Coord, board: dict[Coord, PlayerColor]):
 
         for dir in Direction:
             if board.get(current_node.__add__(dir.value)) == None or current_node.__add__(dir.value) == target:
-                child_node = current_node.__add__(dir.value) 
+                child_node = current_node.__add__(dir.value)
+                next_state = place_block 
 
                 temp_g_score = g_score[current_node] + 1
                 temp_f_score = temp_g_score + heuristic(child_node, target)
+
+                ## append the current board to the queue,
+                ## children node should be change to node in the tetromino that is closes to the target
+                
 
                 if temp_f_score < f_score[child_node]:
                     g_score[child_node] = temp_g_score
